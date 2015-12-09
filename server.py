@@ -45,10 +45,11 @@ def recieved_message():
         people[p].append(message_text)
     for i in range(3):
         people[sender_name].append(message_text)
-    # if time.time() - timer > 60 * 10:
-    name = random.choice(models.keys())
-    message = models[name].make_sentence()
-    send_message(name, message)
+    if time.time() - timer > 60 * 5:
+        name = random.choice(models.keys())
+        message = models[name].make_sentence()
+        send_message(name, message)
+        timer = time.time()
     if lock.acquire(blocking=False):
         for p in people:
             models[p] = NewlineText('\n'.join(people[p]))
