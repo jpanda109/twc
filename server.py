@@ -7,7 +7,7 @@ class NewlineText(markovify.Text):
     def sentence_split(self, text):
         return re.split(r"\s*\n\s*", text)
 
-with open("isis_logs_with_names.csv") as f:
+with open("logs.csv") as f:
     lines = []
     people = {}
     for line in f:
