@@ -1,5 +1,5 @@
 from flask import Flask, json, request
-import requests, markovify, re, random, time, threading
+import requests, markovify, re, random, threading
 app = Flask(__name__)
 lock = threading.Lock()
 
@@ -7,6 +7,7 @@ class NewlineText(markovify.Text):
     def sentence_split(self, text):
         return re.split(r"\s*\n\s*", text)
 
+print "starting"
 with open("logs.csv") as f:
     lines = []
     people = {}
@@ -28,7 +29,6 @@ for p in people:
     models[p] = NewlineText('\n'.join(people[p]))
 print len(models)
 print "chains done building"
-timer = time.time()
 
 def send_message(name, text):
     requests.post('https://api.groupme.com/v3/bots/post', data = {"text" : name + ": " + text, "bot_id" : "5cbb24cded44209a3fc9b3b292"})
@@ -45,11 +45,9 @@ def recieved_message():
         people[p].append(message_text)
     for i in range(3):
         people[sender_name].append(message_text)
-    if time.time() - timer > 60 * 5:
-        name = random.choice(models.keys())
-        message = models[name].make_sentence()
-        send_message(name, message)
-        timer = time.time()
+    name = random.choice(models.keys())
+    message = models[name].make_sentence()
+    send_message(name, message)
     if lock.acquire(blocking=False):
         for p in people:
             models[p] = NewlineText('\n'.join(people[p]))
